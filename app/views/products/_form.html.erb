@@ -1,0 +1,7 @@
+<%= form_for (@product) do |f| %>
+  <%= f.text_field :title, placeholder: "商品名稱" %>
+  <%= f.text_field :description, placeholder: "說明" %>
+  <%= f.text_field :price, placeholder: "售價" %>
+  <%= f.submit "新增書本", class: "btn btn-default btn-primary" %>
+<% end %>
+

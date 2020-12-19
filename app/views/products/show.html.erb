@@ -1,0 +1,27 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Title:</strong>
+  <%= @product.title %>
+</p>
+
+<p>
+  <strong>Description:</strong>
+  <%= @product.description %>
+</p>
+
+<p>
+  <strong>Price:</strong>
+  <%= @product.price %>
+</p>
+
+<%= link_to 'Back', products_path, class:'btn btn-default' %>
+<hr />
+
+<%= form_for(@product, url: mpg_products_path(@product), method: :post) do |f| %>
+
+  <div id="payment-form"></div>
+  <%= f.submit "確認付款", class:"btn btn-default btn-danger" %>
+<% end %>
+
+

@@ -1,0 +1,15 @@
+current directory: /Users/atroposlee/Desktop/5xRuby-note/Bookflix/vendor/bundle/ruby/2.7.0/gems/bootsnap-1.5.1/ext/bootsnap
+/Users/atroposlee/.rvm/rubies/ruby-2.7.1/bin/ruby -I /Users/atroposlee/.rvm/rubies/ruby-2.7.1/lib/ruby/2.7.0 -r ./siteconf20201212-17640-mvehme.rb extconf.rb
+creating Makefile
+
+current directory: /Users/atroposlee/Desktop/5xRuby-note/Bookflix/vendor/bundle/ruby/2.7.0/gems/bootsnap-1.5.1/ext/bootsnap
+make "DESTDIR=" clean
+
+current directory: /Users/atroposlee/Desktop/5xRuby-note/Bookflix/vendor/bundle/ruby/2.7.0/gems/bootsnap-1.5.1/ext/bootsnap
+make "DESTDIR="
+compiling bootsnap.c
+linking shared-object bootsnap/bootsnap.bundle
+
+current directory: /Users/atroposlee/Desktop/5xRuby-note/Bookflix/vendor/bundle/ruby/2.7.0/gems/bootsnap-1.5.1/ext/bootsnap
+make "DESTDIR=" install
+/usr/local/opt/coreutils/bin/ginstall -c -m 0755 bootsnap.bundle ./.gem.20201212-17640-zagvpr/bootsnap

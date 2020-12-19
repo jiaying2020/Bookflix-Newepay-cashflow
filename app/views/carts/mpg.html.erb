@@ -1,0 +1,9 @@
+<h1>智付通 Form</h1>
+<form action="https://ccore.spgateway.com/MPG/mpg_gateway" accept-charset="UTF-8" method="post">
+  <input type='text' name='MerchantID' value='<%= @merchantID %>'>
+  <input type='text' name='TradeInfo' value='<%= @tradeInfo %>'>
+  <input type='text' name='TradeSha' value='<%= @tradeSha%>'>
+  <input type="text" name='Version' value='<%= @version %>'>
+
+  <button type="submit">送出</button>
+</form>

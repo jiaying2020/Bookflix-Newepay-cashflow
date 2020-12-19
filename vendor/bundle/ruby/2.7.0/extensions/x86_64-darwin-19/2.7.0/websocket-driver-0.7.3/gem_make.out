@@ -1,0 +1,15 @@
+current directory: /Users/atroposlee/Desktop/5xRuby-note/Bookflix/vendor/bundle/ruby/2.7.0/gems/websocket-driver-0.7.3/ext/websocket-driver
+/Users/atroposlee/.rvm/rubies/ruby-2.7.1/bin/ruby -I /Users/atroposlee/.rvm/rubies/ruby-2.7.1/lib/ruby/2.7.0 -r ./siteconf20201212-17640-a1aeux.rb extconf.rb
+creating Makefile
+
+current directory: /Users/atroposlee/Desktop/5xRuby-note/Bookflix/vendor/bundle/ruby/2.7.0/gems/websocket-driver-0.7.3/ext/websocket-driver
+make "DESTDIR=" clean
+
+current directory: /Users/atroposlee/Desktop/5xRuby-note/Bookflix/vendor/bundle/ruby/2.7.0/gems/websocket-driver-0.7.3/ext/websocket-driver
+make "DESTDIR="
+compiling websocket_mask.c
+linking shared-object websocket_mask.bundle
+
+current directory: /Users/atroposlee/Desktop/5xRuby-note/Bookflix/vendor/bundle/ruby/2.7.0/gems/websocket-driver-0.7.3/ext/websocket-driver
+make "DESTDIR=" install
+/usr/local/opt/coreutils/bin/ginstall -c -m 0755 websocket_mask.bundle ./.gem.20201212-17640-e4f6ye
