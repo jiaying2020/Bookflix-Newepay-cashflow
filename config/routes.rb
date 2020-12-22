@@ -6,6 +6,8 @@ Rails.application.routes.draw do
     collection do
       post :add, path:'add/:id'
       get :mpg, path: 'checkout'
+      post :notify
+      post :return
     end
   end
 end
