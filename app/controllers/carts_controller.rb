@@ -1,11 +1,12 @@
 class CartsController < ApplicationController
 
   skip_before_action :verify_authenticity_token, only: [:return, :notify]
-    def add
-        current_cart.add_item(params[:id])
-        session[:cart1123] = current_cart.serialize
-    
-        redirect_to products_path, notice: "已加入購物車"
+
+      def add
+          current_cart.add_item(params[:id])
+          session[:cart1123] = current_cart.serialize
+      
+          redirect_to products_path, notice: "已加入購物車"
       end
     
       def destroy
@@ -22,8 +23,8 @@ class CartsController < ApplicationController
         merchantOrderNo = "CallBack"  + Time.now.to_i.to_s
         amt = current_cart.total_price
         itemDesc = 'Callback募資商品'
-        hashKey = 'hfza7ujU9vGdoRNnwB3HqIfdP2bG4Tq1' #填入你的key
-        hashIV = 'Cv9sEeDb2c8fz4BP' #填入你的IV
+        hashKey = 'PED4txrEktTyEDSx8hG0zep0DrKTTT0X' #填入你的key
+        hashIV = 'CQBc2k1cpdHqEEkP' #填入你的IV
     
     
         data = "MerchantID=#{merchantID}&RespondType=#{respondType}&TimeStamp=#{timeStamp}&Version=#{version}&MerchantOrderNo=#{merchantOrderNo}&Amt=#{amt}&ItemDesc=#{itemDesc}&TradeLimit=120"
@@ -57,21 +58,20 @@ class CartsController < ApplicationController
             
             merchantOrderNo = result["MerchantOrderNo"]
             
-            #利用訂單編號找出cart ，以建立付款但未付款的情況，pledge為not_paid
-            pledge = Pledge.not_paid.find_by(merchantOrderNo: merchantOrderNo)
-            if pledge 
+            cart = Cart.not_paid.find_by(merchantOrderNo: merchantOrderNo)
+            if cart 
               # 只讓特定非即時付款方式狀態變化，避免二次執行
               if result["PaymentType"] == "CVS"
-                pledge.payment.paid!
-                pledge.paid!
+                cart.payment.paid!
+                cart.paid!
              
               elsif result["PaymentType"] == "VACC"
-                pledge.payment.paid!
-                pledge.paid!
+                cart.payment.paid!
+                cart.paid!
 
               elsif result["PaymentType"] == "BARCODE"
-                pledge.payment.paid!
-                pledge.paid!
+                cart.payment.paid!
+                cart.paid!
 
               else
                 #Do Nothing
@@ -84,79 +84,12 @@ class CartsController < ApplicationController
           format.json {render json: {result: "success"}}
         end
       end
-
-      def paid
-        if params["Status"] == "SUCCESS"
-    
-          tradeInfo = params["TradeInfo"]
-          tradeSha = params["TradeSha"]
-    
-          checkValue = "HashKey=#{HASH_KEY}&#{tradeInfo}&HashIV=#{HASH_IV}"
-          
-          if tradeSha == Digest::SHA256.hexdigest(checkValue).upcase
-            
-            #解碼
-            rawTradeInfo = decrypt_data(tradeInfo, HASH_KEY, HASH_IV, 'AES-256-CBC')
-            
-            #轉成JSON
-            jsonResult = JSON.parse(rawTradeInfo)
-            
-            #取出json裡面的Result value, 我們需要的都在裡面
-            result = jsonResult["Result"]
-            
-            #寫入Log
-            Logger.new("#{Rails.root}/paid.log").try("info", result)
-            
-            #取出我們平台的訂單編號
-            merchantOrderNo = result["MerchantOrderNo"]
-            
-            #利用訂單編號找出 pledge，同步付款的情況pledge 會是處於not_selected_yet
-            cart = Cart.not_selected_yet.find_by(merchantOrderNo: merchantOrderNo)
-            
-            # 如果有 pledge
-            if cart 
-              
-              # 建立一個新的payment, status會是已付款
-              payment = Payment.paid.new(cart: cart)
-              
-              # payment裡面也有 merchant_order_no，如果用不到可以拿掉這個column
-              payment.merchant_order_no = merchantOrderNo
-              
-              # transaction_service_provider 設成 mpg
-              payment.transaction_service_provider = "mpg"
-              
-              if result["PaymentType"] == "CREDIT"
-                payment.payment_type = "credit_card"
-                # TODO: add info from result
-              elsif result["PaymentType"] == "WEBATM"
-                payment.payment_type = "web_atm"
-                # TODO: add info from result
-              end
-              
-              # 設已付款金額
-              current_cart.total_price = result["Amt"]
-              
-              # 儲存，加!會導致失敗的時候出現error
-              current_cart.save!
-              
-              # pledge 改成已付款，Model裡面有override
-              current_cart.paid!
-              
-              redirect_to :root
-              return
-            end
-          end
-        end
-    
-        flash[:alert] = "付款失敗"
-        redirect_to products_path
-      end
       
       def return
         Logger.new("#{Rails.root}/return.log").try("info", params)
     
-        hashKey = 'hfza7ujU9vGdoRNnwB3HqIfdP2bG4Tq1' #填入你的key
-        hashIV = 'Cv9sEeDb2c8fz4BP' #填入你的IV
+        hashKey = 'PED4txrEktTyEDSx8hG0zep0DrKTTT0X' #填入你的key
+        hashIV = 'CQBc2k1cpdHqEEkP' #填入你的IV
     
         if params["Status"] == "SUCCESS"
     
@@ -170,8 +103,7 @@ class CartsController < ApplicationController
             Logger.new("#{Rails.root}/return.log").try("info", result)
           end
         end
-    
-        redirect_to :root
+        redirect_to products_path
       end
     
       # 新增部分------
@@ -192,6 +124,30 @@ class CartsController < ApplicationController
         cipher.iv = iv
         encrypted = cipher.update(data) + cipher.final
         return encrypted.unpack("H*")[0].upcase
+      end
+
+      def removedPadding(data)
+        blocksize = 32
+        loop do
+          lastHex = data.last.bytes.first
+          break if lastHex >= blocksize
+          data = data[0...-lastHex]
+        end
+        return data
+      end
+    
+      def decrypt_data(data, key, iv, cipher_type)
+        cipher = OpenSSL::Cipher.new(cipher_type)
+        cipher.decrypt
+        cipher.key = key
+        cipher.iv = iv
+        packedData = [data.downcase].pack('H*')
+        data = removedPadding(cipher.update(packedData))
+        begin
+          return data + cipher.final
+        rescue
+          return data
+        end
       end
 
 

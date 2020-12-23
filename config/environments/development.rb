@@ -1,10 +1,7 @@
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
-  # 網址每關掉ngrok一次就要重設
-  # config.hosts << "93e514b074f5.ngrok.io"
-
-
+  config.hosts << "afb9750eadc4.ngrok.io"
   
   # In the development environment your application's code is reloaded on
   # every request. This slows down response time but is perfect for development
