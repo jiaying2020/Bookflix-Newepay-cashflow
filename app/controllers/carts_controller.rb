@@ -35,7 +35,7 @@ class CartsController < ApplicationController
     
         @merchantID = merchantID
         @tradeInfo = aes
-        @tradeSha = Digest::SHA256.hexdigest(checkValue).upcase
+        @tradeSha  = Digest::SHA256.hexdigest(checkValue).upcase
         @version = version
       end
     
